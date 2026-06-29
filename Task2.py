@@ -1,6 +1,7 @@
 import mutagen as mt
 from pathlib import Path
 import av
+import numpy
 
 class Metadataextractor:
     def __init__(self):
@@ -33,10 +34,12 @@ class Mp3backend:
         self.metadeta = metadata.metadata
         self.decoded_sample = None
         self.audio_stream = None
+        self.pcm_chunks = []
+
 
         self.audio_stream_data = None
         self.audio_stream_extraction()
-        self.packet_extraction()
+        self.array_extraction()
 
 
     def audio_stream_extraction(self):
@@ -47,9 +50,21 @@ class Mp3backend:
             self.audio_stream_data = {"codec context":self.audio_stream.codec_context,"sample rate":self.audio_stream.sample_rate,"channels":self.audio_stream.channels}
             print(self.audio_stream_data)
 
-    def packet_extraction(self):
-        for packets in self.decoded_sample.container(self.audio_stream):
-            print(packets)
+    def array_extraction(self):
+        print(type(self.decoded_sample))
+        for packets in self.decoded_sample.demux(self.audio_stream):
+            for frame in packets.decode():
+                frame_info = {"Format":frame.format,"Layout":frame.layout, "Sample rate":frame.sample_rate}
+                print(frame_info)
+                pcm = frame.to_ndarray()
+                print(type(pcm))
+                pcm_info = {"Shape":pcm.shape,"Dtype":pcm.dtype}
+                print(pcm_info)
+
+
+
+
+
 
 
 
