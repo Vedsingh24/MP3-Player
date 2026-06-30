@@ -1,7 +1,9 @@
 import mutagen as mt
 from pathlib import Path
 import av
-import numpy
+import numpy as np
+import sounddevice as sd
+
 
 class Metadataextractor:
     def __init__(self):
@@ -36,11 +38,13 @@ class Mp3backend:
         self.audio_stream = None
         self.pcm_chunks = []
         self.pcm = None
+        self.full_audio = None
 
 
         self.audio_stream_data = None
         self.audio_stream_extraction()
         self.array_extraction()
+        self.audio_streaming()
 
 
 
@@ -57,15 +61,20 @@ class Mp3backend:
         for packets in self.decoded_sample.demux(self.audio_stream):
             for frame in packets.decode():
                 frame_info = {"Format":frame.format,"Layout":frame.layout, "Sample rate":frame.sample_rate}
-                print(frame_info)
+
                 pcm = frame.to_ndarray()
                 transposed_array = pcm.T
                 self.pcm_chunks.append(transposed_array)
 
                 pcm_info = {"Shape":pcm.shape,"Dtype":pcm.dtype}
-                print(pcm_info)
 
-        print(self.pcm_chunks)
+    def audio_streaming(self):
+        self.full_audio = np.concatenate(self.pcm_chunks,axis=0)
+        play = sd.play(self.full_audio,samplerate=self.audio_stream.sample_rate)
+        sd.wait()
+
+
+
 
 
 
