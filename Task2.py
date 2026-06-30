@@ -35,11 +35,13 @@ class Mp3backend:
         self.decoded_sample = None
         self.audio_stream = None
         self.pcm_chunks = []
+        self.pcm = None
 
 
         self.audio_stream_data = None
         self.audio_stream_extraction()
         self.array_extraction()
+
 
 
     def audio_stream_extraction(self):
@@ -57,9 +59,18 @@ class Mp3backend:
                 frame_info = {"Format":frame.format,"Layout":frame.layout, "Sample rate":frame.sample_rate}
                 print(frame_info)
                 pcm = frame.to_ndarray()
-                print(type(pcm))
+                transposed_array = pcm.T
+                self.pcm_chunks.append(transposed_array)
+
                 pcm_info = {"Shape":pcm.shape,"Dtype":pcm.dtype}
                 print(pcm_info)
+
+        print(self.pcm_chunks)
+
+
+
+
+
 
 
 
