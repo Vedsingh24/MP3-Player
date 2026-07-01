@@ -5,9 +5,10 @@ import numpy as np
 import sounddevice as sd
 
 
+
 class Metadataextractor:
     def __init__(self):
-        self.path = r"C:\Users\Ved Singh\Downloads\Alone_-_Color_Out.mp3"
+        self.path = r"C:\Users\Ved Singh\Downloads\Aled_Edwards_-_All_In_My_Mind_-_Jazz_Dream_Pop.mp3"
         self.metadata = None
         # self.path_config()
         # self.metadata_extractor()
@@ -39,11 +40,15 @@ class Mp3backend:
         self.pcm_chunks = []
         self.pcm = None
         self.full_audio = None
+        self.volume = 1.0
+        self.speed = 1.0
+        self.sample_rate = None
 
 
         self.audio_stream_data = None
         self.audio_stream_extraction()
         self.array_extraction()
+
         self.audio_streaming()
 
 
@@ -68,9 +73,17 @@ class Mp3backend:
 
                 pcm_info = {"Shape":pcm.shape,"Dtype":pcm.dtype}
 
+    def volume_set(self):
+        self.full_audio = self.full_audio * self.volume
+    def speed_set(self):
+        self.sample_rate = self.audio_stream.sample_rate*self.speed
+
+
     def audio_streaming(self):
         self.full_audio = np.concatenate(self.pcm_chunks,axis=0)
-        play = sd.play(self.full_audio,samplerate=self.audio_stream.sample_rate)
+        self.volume_set()
+        self.speed_set()
+        play = sd.play(self.full_audio,samplerate=self.sample_rate)
         sd.wait()
 
 
