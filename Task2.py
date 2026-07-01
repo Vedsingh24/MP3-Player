@@ -3,6 +3,7 @@ from pathlib import Path
 import av
 import numpy as np
 import sounddevice as sd
+import scipy as sc
 
 
 
@@ -77,6 +78,16 @@ class Mp3backend:
         self.full_audio = self.full_audio * self.volume
     def speed_set(self):
         self.sample_rate = self.audio_stream.sample_rate*self.speed
+
+    def filterdesign(self):
+        Bass_filter = sc.signal.butter(4,250,'low',output='sos',fs=self.sample_rate)
+        Low_mid_filter = sc.signal.butter(N=4,Wn=[250,1000],btype="bandpass",output='sos',fs=self.sample_rate)
+        High_mid_filter = sc.signal.butter(N=4, Wn=[1000, 4000], btype="bandpass", output='sos', fs=self.sample_rate)
+        Treble_filter = sc.signal.butter(N=4, Wn=[4000, 20000], btype="bandpass", output='sos', fs=self.sample_rate)
+    def equalization(self):
+        pass
+
+
 
 
     def audio_streaming(self):
