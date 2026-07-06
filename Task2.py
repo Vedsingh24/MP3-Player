@@ -4,12 +4,13 @@ import av
 import numpy as np
 import sounddevice as sd
 import scipy as sc
+from scipy import signal
 
 
 
 class Metadataextractor:
     def __init__(self):
-        self.path = r"C:\Users\Ved Singh\Downloads\Aled_Edwards_-_All_In_My_Mind_-_Jazz_Dream_Pop.mp3"
+        self.path = r"C:\Users\Ved Singh\Downloads\Alone_-_Color_Out.mp3"
         self.metadata = None
         # self.path_config()
         # self.metadata_extractor()
@@ -44,6 +45,15 @@ class Mp3backend:
         self.volume = 1.0
         self.speed = 1.0
         self.sample_rate = None
+        self.bass_audio = None
+        self.low_mid_audio = None
+        self.high_mid_audio = None
+        self.treble_audio = None
+        self.bass_vol = 1.2
+        self.lowmid_vol = 1.1
+        self.highmid_vol = 0.9
+        self.treble_vol = 0.2
+
 
 
         self.audio_stream_data = None
@@ -80,18 +90,26 @@ class Mp3backend:
         self.sample_rate = self.audio_stream.sample_rate*self.speed
 
     def filterdesign(self):
-        Bass_filter = sc.signal.butter(4,250,'low',output='sos',fs=self.sample_rate)
-        Low_mid_filter = sc.signal.butter(N=4,Wn=[250,1000],btype="bandpass",output='sos',fs=self.sample_rate)
-        High_mid_filter = sc.signal.butter(N=4, Wn=[1000, 4000], btype="bandpass", output='sos', fs=self.sample_rate)
-        Treble_filter = sc.signal.butter(N=4, Wn=[4000, 20000], btype="bandpass", output='sos', fs=self.sample_rate)
+        self.bass_filter = signal.butter(4,250,'low',output='sos',fs=self.sample_rate)
+        self.low_mid_filter = signal.butter(N=4,Wn=[250,1000],btype="bandpass",output='sos',fs=self.sample_rate)
+        self.high_mid_filter = signal.butter(N=4, Wn=[1000, 4000], btype="bandpass", output='sos', fs=self.sample_rate)
+        self.treble_filter = signal.butter(N=4, Wn=[4000, 20000], btype="bandpass", output='sos', fs=self.sample_rate)
     def equalization(self):
-        pass
+        self.filterdesign()
+        self.bass_audio = signal.sosfiltfilt(self.bass_filter,self.full_audio)*self.bass_vol
+        self.low_mid_audio = signal.sosfiltfilt(self.low_mid_filter,self.full_audio)*self.lowmid_vol
+        self.high_mid_audio = signal.sosfiltfilt(self.high_mid_filter,self.full_audio)*self.highmid_vol
+        self.treble_audio = signal.sosfiltfilt(self.treble_filter,self.full_audio)*self.treble_vol
+        self.full_audio = self.bass_audio + self.low_mid_audio + self.high_mid_audio + self.treble_audio
+
+
 
 
 
 
     def audio_streaming(self):
         self.full_audio = np.concatenate(self.pcm_chunks,axis=0)
+
         self.volume_set()
         self.speed_set()
         play = sd.play(self.full_audio,samplerate=self.sample_rate)
