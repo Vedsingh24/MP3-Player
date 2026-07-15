@@ -7,7 +7,8 @@ import scipy as sc
 from scipy import signal
 from tkinter import *
 from tkinter import ttk
-import tkinter as Tk
+from tkinter import Tk
+import tkinter as tk
 
 
 
@@ -34,7 +35,7 @@ class Metadataextractor:
                          "Website":audio['TPUB'].text[0]}
         print(self.metadata)
 
-metadata = Metadataextractor()
+
 
 class Mp3backend:
     def __init__(self):
@@ -139,31 +140,50 @@ class Mp3backend:
 
 
 
-array_extract = Mp3backend()
+
 
 class Mp3Frontend:
     def __init__(self):
         self.root = Tk()
         self.root.geometry("500x500")
         self.frame = ttk.Frame(self.root)
+        self.asset_creation()
         self.gui_creation()
         self.gui_placement()
         self.root.mainloop()
 
 
+
     def gui_creation(self):
-        self.play_button = ttk.Button(self.root,image="play_button.png",command=None)
-        self.volume_scale = Tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
-        self.bass_scale = Tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
-        self.low_mid_scale = Tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
-        self.high_mid_scale = Tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
-        self.treble_scale = Tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
-        self.speed_scale = Tk.Scale(self.root,from_=0,to=3,resolution=0.25,orient="horizontal")
-        self.browse_mp3 = ttk.Button(self.root, image="browse_button.png",command = None)
+        self.play_button = ttk.Button(self.root,command=None)
+        self.volume_scale = tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
+        self.bass_scale = tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
+        self.low_mid_scale = tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
+        self.high_mid_scale = tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
+        self.treble_scale = tk.Scale(self.root,from_=0,to=200,resolution=1,orient="horizontal")
+        self.speed_scale = tk.Scale(self.root,from_=0,to=3,resolution=0.25,orient="horizontal")
+        self.browse_mp3 = ttk.Button(self.root,command = None)
 
 
     def gui_placement(self):
-        self.play_button.place(150,200)
+        self.play_button.place(x=150,y=30)
+        self.volume_scale.set(70)
+        self.volume_scale.place(x=150,y=60)
+        self.bass_scale.set(100)
+        self.bass_scale.place(x=150,y=90)
+        self.low_mid_scale.set(100)
+        self.low_mid_scale.place(x=150,y=120)
+        self.high_mid_scale.set(100)
+        self.high_mid_scale.place(x=150,y=150)
+        self.treble_scale.set(100)
+        self.treble_scale.place(x=150,y=180)
+        self.speed_scale.set(1.0)
+        self.speed_scale.place(x=150, y =210)
+        self.browse_mp3.place(x=150,y=240)
+
+
+Mp3Frontend()
+
 
 
 
